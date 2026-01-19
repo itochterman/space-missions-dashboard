@@ -1,228 +1,122 @@
-# Space Missions Dashboard
+Interactive dashboard for exploring historical space launch data (1957-present). Built for a technical assessment.
 
-An interactive dashboard for visualizing and analyzing historical space mission data from 1957 to present. Built as part of the Rely Health technical assessment.
+## Quick Start
 
-**Author**: Isabella Tochterman  
-**Date**: January 2026
-
-## 🚀 Overview
-
-This project provides a comprehensive analysis platform for space mission data, featuring:
-- 8 programmatically testable functions for data analysis
-- Interactive web dashboard with multiple visualizations
-- Real-time filtering and data exploration capabilities
-- Clean, production-ready code with extensive error handling
-
-## 📋 Requirements
-
-- Python 3.8+
-- pandas
-- streamlit
-- plotly
-
-## 🔧 Installation & Setup
-
-1. **Clone the repository**
 ```bash
-git clone <your-repo-url>
-cd space-missions-dashboard
+# Install dependencies
+pip install streamlit pandas plotly
+
+# Run it
+streamlit run app.py
 ```
 
-2. **Install dependencies**
+Opens in the browser automatically at `localhost:8501`.
+
+## Requirements
+
+- Python 3.8+
+- streamlit
+- pandas  
+- plotly
+
+Can be installed with:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Ensure data file is present**
-- Place `space_missions.csv` in the project root directory
-- The CSV should contain columns: Company, Location, Date, Time, Rocket, Mission, RocketStatus, Price, MissionStatus
+## What This Does
 
-4. **Run the dashboard**
+Analyzes ~4600 space missions with 8 programmatic functions and an interactive web dashboard. You can filter by date, company, mission status and see various charts/stats.
+
+### The 8 Required Functions
+
+All in `functions.py`:
+
+1. `getMissionCountByCompany(companyName)` - count missions per company
+2. `getSuccessRate(companyName)` - success rate % for a company  
+3. `getMissionsByDateRange(start, end)` - list missions in date range
+4. `getTopCompaniesByMissionCount(n)` - top N companies by launches
+5. `getMissionStatusCount()` - breakdown of success/failure/etc
+6. `getMissionsByYear(year)` - count for specific year
+7. `getMostUsedRocket()` - most frequently used rocket
+8. `getAverageMissionsPerYear(start, end)` - average over year range
+
+### The Dashboard
+
+Has 4 visualizations:
+- **Success rate over time** - Shows how reliability improved from the 1950s to modern 95%+ success rates
+- **Top companies** - Bar chart of who launches the most
+- **Mission outcomes** - Pie chart showing overall success vs. failure breakdown
+- **Launch activity** - Area chart of missions per year
+
+Plus filters for date/company/status, summary stats, and a searchable data table.
+
+## Why These Visualizations?
+
+**Line chart for success rate**: Correlative, temporal trends are best shown with lines. You can clearly see technology improving over decades.
+
+**Bar chart for companies**: Easy to compare and rank. Horizontal bars handle long company names better.Discrete data points.
+
+**Pie chart for status**: Quick sense of overall reliability.
+
+**Area chart for activity**: Shows volume/magnitude well. The "weight" of the filled area emphasizes busy vs quiet periods in space history.
+
+I added the fourth one (wasn't required to have 4) because the data is interesting and it's cool to see the Space Race era vs the modern commercial space boom.
+
+## Project Structure
+
+Main files:
+- `app.py` - Streamlit dashboard
+- `functions.py` - The 8 main functions  
+- `requirements.txt` - Dependencies
+- `space_missions.csv` - Dataset (needs to be here)
+- `README.md` - You are here
+
+## Testing the Functions
+
 ```bash
-streamlit run app.py
+python test_functions.py
 ```
 
-The dashboard will automatically open in your browser at `http://localhost:8501`
+Should output results for all 8 functions with sample data.
 
-## 🏗️ Project Structure
+## Tech Stack Choices
 
-```
-space-missions-dashboard/
-├── app.py                  # Streamlit dashboard application
-├── functions.py            # Core analysis functions (programmatic grading)
-├── requirements.txt        # Python dependencies
-├── space_missions.csv      # Dataset (not included in repo)
-└── README.md              # This file
-```
+**Streamlit** - Chose this over building a React app because I wanted to focus on the data analysis, not fighting with frontend frameworks. Plus it has interactive filters built-in.
 
-## 📊 Visualization Rationale
+**Plotly** - Better interactivity than matplotlib (hover, zoom, pan). Looks more professional.
 
-### 1. Mission Success Rate Trends Over Time (Line Chart)
+**Pandas** - Industry standard for this kind of data manipulation. Great CSV support.
 
-**Purpose**: Track how mission reliability has evolved across decades.
+## Data File
 
-**Why this method?**
-- Line charts excel at showing temporal trends and patterns
-- Enables identification of pivotal moments in space technology
-- Reveals correlation between historical events and success rates
-- Useful for risk assessment and trend forecasting
+You need `space_missions.csv` in the project root. A valid data table input will have have these columns:
+- Company
+- Location  
+- Date (YYYY-MM-DD)
+- Time (HH:MM:SS)
+- Rocket
+- Mission
+- RocketStatus
+- Price (optional/empty for many)
+- MissionStatus
 
-**Key Insights**: This visualization reveals the Space Race era's trial-and-error phase, followed by steady improvement in the 1970s-80s as technology matured, and modern commercial space's consistently high success rates.
+The full dataset has 4631 rows.
 
-### 2. Top Space Organizations by Launch Volume (Horizontal Bar Chart)
+## Known Issues / Future Ideas
 
-**Purpose**: Compare launch activity across different space agencies and companies.
+- The company filter defaults to only 5 companies for performance, more selection decreases performance
+- Would be nice to add a map visualization showing launch sites geographically
+- Could add cost analysis for missions that have price data
+- Might add rocket family grouping, i.e by make/model
 
-**Why this method?**
-- Horizontal bars handle long organization names better than vertical
-- Color gradient emphasizes relative scale differences
-- Easy to rank and compare at a glance
-- Natural reading flow from top to bottom
+## Notes
 
-**Key Insights**: Clearly shows dominance of government programs (USSR, US agencies) in early space era vs. emergence of commercial players (SpaceX, Arianespace) in recent decades.
+Built with Python/Streamlit because it's fast to prototype and the interactivity is built in. The assessment required specific function signatures and return types which are all in `functions.py`.
 
-### 3. Overall Mission Outcome Distribution (Pie Chart)
-
-**Purpose**: Visualize the proportion of different mission outcomes.
-
-**Why this method?**
-- Pie charts effectively communicate part-to-whole relationships
-- Immediate understanding of overall reliability
-- Color coding makes status categories instantly recognizable
-- Important for stakeholder communication about risk
-
-**Key Insights**: Provides a clear overview of mission reliability—critical for insurance underwriters, investors, and safety regulators evaluating the space industry.
-
-### 4. Global Launch Activity Over Time (Area Chart)
-
-**Purpose**: Show volume of space launches across history.
-
-**Why this method?**
-- Area charts emphasize volume and magnitude changes
-- Visual "weight" of the fill conveys activity intensity
-- Effective for showing boom/bust cycles in the industry
-- Complements the success rate trend by adding volume context
-
-**Key Insights**: Reveals the intense Space Race peak (1960s-70s), Cold War decline, and the dramatic resurgence driven by commercial spaceflight and small satellite markets.
-
-## 🔍 Core Functions
-
-All functions follow exact specifications from the assessment requirements:
-
-### `getMissionCountByCompany(companyName: str) -> int`
-Returns total number of missions for a given company.
-
-### `getSuccessRate(companyName: str) -> float`
-Calculates success rate percentage (0-100, 2 decimal places).
-
-### `getMissionsByDateRange(startDate: str, endDate: str) -> list`
-Returns mission names within date range, sorted chronologically.
-
-### `getTopCompaniesByMissionCount(n: int) -> list`
-Returns top N companies as list of (name, count) tuples.
-
-### `getMissionStatusCount() -> dict`
-Returns count of missions for each status category.
-
-### `getMissionsByYear(year: int) -> int`
-Returns total missions launched in a specific year.
-
-### `getMostUsedRocket() -> str`
-Returns the most frequently used rocket name.
-
-### `getAverageMissionsPerYear(startYear: int, endYear: int) -> float`
-Calculates average missions per year over a range.
-
-## 🧪 Testing Functions
-
-Run the function tests directly:
-```bash
-python functions.py
-```
-
-This will execute basic tests on all 8 functions with sample data.
-
-## 🎨 Dashboard Features
-
-### Interactive Filters
-- **Date Range Selector**: Filter missions by launch date
-- **Company Multi-Select**: Focus on specific organizations
-- **Mission Status Filter**: Analyze successes, failures, or specific outcomes
-
-### Summary Statistics
-Real-time metrics based on filtered data:
-- Total missions count
-- Overall success rate
-- Number of unique companies
-- Variety of rocket types
-
-### Data Explorer
-- Sortable, searchable data table
-- Customizable column display
-- CSV export functionality
-
-## 💡 Design Decisions
-
-### Technology Stack
-- **Streamlit**: Chosen for rapid development, native interactivity, and clean UI without frontend code
-- **Plotly**: Selected for professional, interactive visualizations with zoom, pan, and hover details
-- **Pandas**: Industry-standard for data manipulation with excellent CSV handling
-
-### Code Quality
-- Type hints for all function signatures
-- Comprehensive docstrings following Google style
-- Extensive input validation and error handling
-- Separation of concerns (data logic vs. presentation)
-- Efficient data caching to improve performance
-
-### User Experience
-- Responsive layout that adapts to screen size
-- Clear visual hierarchy with sections and dividers
-- Intuitive filter controls in sidebar
-- Download capability for filtered datasets
-- Professional color scheme and styling
-
-## 🚨 Error Handling
-
-The application handles common edge cases:
-- Missing or invalid CSV file
-- Malformed date formats
-- Empty company names
-- Division by zero in success rate calculations
-- Invalid function inputs (wrong types, negative values)
-- Missing data in optional fields (Price, Time)
-
-## 📈 Performance Considerations
-
-- Data loading is cached using `@st.cache_data` decorator
-- Filters are applied efficiently using pandas vectorized operations
-- Chart rendering optimized by limiting default company selections
-- Functions load data on-demand to avoid memory overhead
-
-## 🔐 Healthcare Relevance
-
-While this project analyzes space mission data, the skills demonstrated are directly applicable to healthcare AI integration:
-
-1. **Data Quality & Validation**: Healthcare systems require rigorous input validation—demonstrated through comprehensive error handling in all functions.
-
-2. **Regulatory Compliance**: Following exact specifications mirrors healthcare's need for precise adherence to HIPAA, HL7, and FDA guidelines.
-
-3. **Stakeholder Communication**: Clear visualizations are essential for explaining AI model outputs to clinicians, administrators, and patients.
-
-4. **System Integration**: The modular architecture (separate data layer and presentation layer) reflects best practices for integrating with existing EHR systems.
-
-5. **Edge Case Handling**: Healthcare data is messy—the defensive programming approach used here is critical for production medical systems.
-
-## 🙏 Acknowledgments
-
-Dataset represents historical space launch data compiled from public sources. Dashboard built using open-source tools: Streamlit, Plotly, and Pandas.
-
-## 📧 Contact
-
-Isabella Tochterman  
-[GitHub Profile](https://github.com/yourusername)  
-[Portfolio](https://isabellatochterman.com)
+The visualizations all update based on the filters, so you can filter specific time periods and/or companies.
 
 ---
 
-*Built with ☕ and 🚀 in San Francisco*
+Isabella Tochterman
+January 2026

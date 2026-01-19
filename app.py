@@ -1,11 +1,3 @@
-"""
-Space Missions Interactive Dashboard
-Author: Isabella Tochterman
-Date: January 2026
-
-Interactive dashboard for visualizing and analyzing historical space mission data.
-Built with Streamlit for rapid prototyping and clean UI.
-"""
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -28,8 +20,8 @@ st.markdown("""
 
 
 @st.cache_data
+#Cache data for performance optimization
 def load_dashboard_data():
-    """Cache data for performance optimization"""
     df = pd.read_csv('space_missions.csv')
     df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
     df['Year'] = df['Date'].dt.year
@@ -143,7 +135,7 @@ def main():
     )
     fig1.update_traces(line_color='#1f77b4', line_width=2)
     fig1.update_layout(hovermode='x unified')
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width='stretch')
     
     # Visualization 2: Top Companies by Mission Count
     st.subheader("2. Top Space Organizations by Launch Volume")
@@ -167,7 +159,7 @@ def main():
         color_continuous_scale='Viridis'
     )
     fig2.update_layout(showlegend=False, yaxis={'categoryorder': 'total ascending'})
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width='stretch')
     
     # Visualization 3: Mission Status Distribution
     st.subheader("3. Overall Mission Outcome Distribution")
@@ -188,7 +180,7 @@ def main():
         color_discrete_sequence=px.colors.qualitative.Set2
     )
     fig3.update_traces(textposition='inside', textinfo='percent+label')
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width='stretch')
     
     # Visualization 4: Missions Per Year Trend
     st.subheader("4. Global Launch Activity Over Time")
@@ -208,8 +200,7 @@ def main():
         labels={'Mission_Count': 'Number of Missions', 'Year': 'Year'}
     )
     fig4.update_traces(line_color='#2ca02c', fillcolor='rgba(44, 160, 44, 0.3)')
-    st.plotly_chart(fig4, use_container_width=True)
-    
+    st.plotly_chart(fig4, width='stretch')
     st.markdown("---")
     
     # Data Table
@@ -234,7 +225,7 @@ def main():
         # Display with sorting
         st.dataframe(
             display_df,
-            use_container_width=True,
+            width='stretch',
             height=400
         )
         

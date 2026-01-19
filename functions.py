@@ -1,26 +1,21 @@
-"""
-Space Missions Data Analysis Functions
-Author: Isabella Tochterman
-Date: January 2026
-
-This module contains functions for analyzing historical space mission data.
-All functions follow the exact specifications from the assessment requirements.
-"""
-
 import pandas as pd
 from typing import List, Tuple, Dict
 from datetime import datetime
+from functools import lru_cache
 
-
+# Load space missions data from CSV file. Cache after first call for performance. 
+@lru_cache(maxsize=1)
 def load_data() -> pd.DataFrame:
-    """
-    Load space missions data from CSV file.
-    
-    Returns:
-        DataFrame containing space missions data
-    """
     try:
         df = pd.read_csv('space_missions.csv')
+        # Validate required columns exist
+        required_columns = ['Company', 'Location', 'Date', 'Time', 'Rocket', 
+                          'Mission', 'RocketStatus', 'Price', 'MissionStatus']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        
+        if missing_columns:
+            raise ValueError(f"CSV is missing required columns: {', '.join(missing_columns)}")
+        
         # Convert Date column to datetime for proper sorting
         df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
         return df
@@ -30,19 +25,8 @@ def load_data() -> pd.DataFrame:
         raise Exception(f"Error loading data: {str(e)}")
 
 
+# Returns the total number of missions for a given company.
 def getMissionCountByCompany(companyName: str) -> int:
-    """
-    Returns the total number of missions for a given company.
-    
-    Args:
-        companyName: Name of the company (e.g., "NASA", "SpaceX")
-    
-    Returns:
-        Integer representing the total number of missions
-    
-    Example:
-        getMissionCountByCompany("NASA") # Returns: 394
-    """
     if not isinstance(companyName, str):
         return 0
     
@@ -51,21 +35,9 @@ def getMissionCountByCompany(companyName: str) -> int:
     return count
 
 
+# Calculates the success rate for a given company as a percentage.
+
 def getSuccessRate(companyName: str) -> float:
-    """
-    Calculates the success rate for a given company as a percentage.
-    
-    Args:
-        companyName: Name of the company
-    
-    Returns:
-        Float representing success rate as a percentage (0-100), rounded to 2 decimal places
-        Only "Success" missions count as successful
-        Returns 0.0 if company has no missions
-    
-    Example:
-        getSuccessRate("NASA") # Returns: 87.34
-    """
     if not isinstance(companyName, str):
         return 0.0
     
@@ -80,22 +52,8 @@ def getSuccessRate(companyName: str) -> float:
     
     return round(success_rate, 2)
 
-
+# Returns a list of all mission names launched between startDate and endDate (inclusive).
 def getMissionsByDateRange(startDate: str, endDate: str) -> List[str]:
-    """
-    Returns a list of all mission names launched between startDate and endDate (inclusive).
-    
-    Args:
-        startDate: Start date in "YYYY-MM-DD" format
-        endDate: End date in "YYYY-MM-DD" format
-    
-    Returns:
-        List of strings containing mission names, sorted chronologically
-    
-    Example:
-        getMissionsByDateRange("1957-10-01", "1957-12-31")
-        # Returns: ["Sputnik-1", "Sputnik-2", "Vanguard TV3"]
-    """
     try:
         start = pd.to_datetime(startDate)
         end = pd.to_datetime(endDate)
@@ -114,23 +72,8 @@ def getMissionsByDateRange(startDate: str, endDate: str) -> List[str]:
     
     return missions
 
-
+# Returns the top N companies ranked by total number of missions.
 def getTopCompaniesByMissionCount(n: int) -> List[Tuple[str, int]]:
-    """
-    Returns the top N companies ranked by total number of missions.
-    
-    Args:
-        n: Number of top companies to return
-    
-    Returns:
-        List of tuples: [(companyName, missionCount), ...]
-        Sorted by mission count in descending order
-        If companies have the same count, sort alphabetically by company name
-    
-    Example:
-        getTopCompaniesByMissionCount(3)
-        # Returns: [("RVSN USSR", 1777), ("Arianespace", 279), ("NASA", 199)]
-    """
     if not isinstance(n, int) or n <= 0:
         return []
     
@@ -152,19 +95,9 @@ def getTopCompaniesByMissionCount(n: int) -> List[Tuple[str, int]]:
     
     return result
 
+# Returns the count of missions for each mission status.
 
 def getMissionStatusCount() -> Dict[str, int]:
-    """
-    Returns the count of missions for each mission status.
-    
-    Returns:
-        Dictionary with status as key and count as value
-        Keys: "Success", "Failure", "Partial Failure", "Prelaunch Failure"
-    
-    Example:
-        getMissionStatusCount()
-        # Returns: {"Success": 3879, "Failure": 485, "Partial Failure": 68, "Prelaunch Failure": 7}
-    """
     df = load_data()
     
     # Count each status
@@ -176,20 +109,9 @@ def getMissionStatusCount() -> Dict[str, int]:
     
     return result
 
+# Returns the total number of missions launched in a specific year.
 
 def getMissionsByYear(year: int) -> int:
-    """
-    Returns the total number of missions launched in a specific year.
-    
-    Args:
-        year: Year (e.g., 2020)
-    
-    Returns:
-        Integer representing the total number of missions in that year
-    
-    Example:
-        getMissionsByYear(2020) # Returns: 114
-    """
     if not isinstance(year, int):
         return 0
     
@@ -201,18 +123,8 @@ def getMissionsByYear(year: int) -> int:
     
     return count
 
-
+# Returns the name of the rocket that has been used the most times.
 def getMostUsedRocket() -> str:
-    """
-    Returns the name of the rocket that has been used the most times.
-    
-    Returns:
-        String containing the rocket name
-        If multiple rockets have the same count, return the first one alphabetically
-    
-    Example:
-        getMostUsedRocket() # Returns: "Cosmos-3M (11K65M)"
-    """
     df = load_data()
     
     # Count rocket usage
@@ -230,21 +142,8 @@ def getMostUsedRocket() -> str:
     # Return alphabetically first if there's a tie
     return sorted(most_used.index)[0]
 
-
+# Calculates the average number of missions per year over a given range.
 def getAverageMissionsPerYear(startYear: int, endYear: int) -> float:
-    """
-    Calculates the average number of missions per year over a given range.
-    
-    Args:
-        startYear: Starting year (inclusive)
-        endYear: Ending year (inclusive)
-    
-    Returns:
-        Float representing average missions per year, rounded to 2 decimal places
-    
-    Example:
-        getAverageMissionsPerYear(2010, 2020) # Returns: 87.45
-    """
     if not isinstance(startYear, int) or not isinstance(endYear, int):
         return 0.0
     
