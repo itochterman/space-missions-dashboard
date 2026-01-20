@@ -2,13 +2,14 @@ Interactive dashboard for exploring historical space launch data (1957-present).
 
 ## Quick Start
 
-```bash
+# Create virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate  # On Mac/Linux
+# venv\Scripts\activate   # On Windows
 # Install dependencies
 pip install streamlit pandas plotly
-
 # Run it
 streamlit run app.py
-```
 
 Opens in the browser automatically at `localhost:8501`.
 
